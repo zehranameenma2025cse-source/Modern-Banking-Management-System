@@ -1,0 +1,15 @@
+import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import customerRoutes from './routes/customerRoutes.js';
+import accountRoutes from './routes/accountRoutes.js';
+import transactionRoutes from './routes/transactionRoutes.js';
+import { errorHandler } from './middleware/errorHandler.js';
+const __dirname=path.dirname(fileURLToPath(import.meta.url));
+const app=express();
+app.use(express.json({limit:'1mb'})); app.use(express.urlencoded({extended:false})); app.use(express.static(path.join(__dirname,'public')));
+app.get('/api/health',(req,res)=>res.json({success:true,status:'ok'}));
+app.use('/api/customers',customerRoutes); app.use('/api/accounts',accountRoutes); app.use('/api/transactions',transactionRoutes);
+app.use('/api', (req,res)=>res.status(404).json({success:false,message:'API endpoint not found.'}));
+app.use(errorHandler);
+export default app;
